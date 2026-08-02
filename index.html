@@ -3,263 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Finanzas App Pro</title>
+    <title>Control Financiero</title>
     <style>
-        :root { --primary: #2C3E50; --success: #27ae60; --bg: #f4f7f6; --text: #333; --accent: #e74c3c; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; }
-        .header { background: var(--primary); color: white; text-align: center; padding: 15px; font-size: 1.2rem; font-weight: bold; }
+        :root { --bg: #121212; --card-bg: #1e1e1e; --text: #e0e0e0; --primary: #bb86fc; --success: #03dac6; --danger: #cf6679; --border: #333; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; padding-bottom: 70px; }
         
-        /* Navegación deslizable (Scroll horizontal para que entren todas las pestañas) */
-        .tabs { display: flex; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow-x: auto; white-space: nowrap; }
-        .tab-btn { flex: 0 0 auto; padding: 15px 20px; border: none; background: none; font-weight: bold; color: #7f8c8d; cursor: pointer; border-bottom: 3px solid transparent; transition: 0.3s; }
-        .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
+        .header { background: var(--card-bg); padding: 20px; text-align: center; font-size: 1.2rem; font-weight: bold; border-bottom: 1px solid var(--border); }
         
+        /* Dashboard Grid */
+        .dashboard-main { background: linear-gradient(135deg, #2c2c2c, #1a1a1a); padding: 25px 20px; text-align: center; border-bottom: 1px solid var(--border); }
+        .net-worth { font-size: 2.5rem; font-weight: bold; color: var(--success); margin-top: 10px; }
+        
+        .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
+        .card { background: var(--card-bg); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--border); }
+        .card-title { font-size: 0.85rem; color: #aaa; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .card-value { font-size: 1.3rem; font-weight: bold; }
+        .val-liq { color: #82b1ff; } .val-inv { color: #b388ff; } .val-deuda { color: var(--danger); }
+        
+        .projection-box { background: var(--card-bg); margin: 0 20px 20px 20px; padding: 20px; border-radius: 12px; border: 1px solid var(--border); }
+        .proj-item { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .proj-item:last-child { border-bottom: none; }
+
+        /* Formularios */
         .tab-content { display: none; padding: 20px; max-width: 500px; margin: auto; }
         .tab-content.active { display: block; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 0.9rem; margin-bottom: 8px; color: #bbb; }
+        input, select { width: 100%; padding: 14px; background: #2c2c2c; border: 1px solid var(--border); border-radius: 8px; color: white; font-size: 1rem; box-sizing: border-box; }
+        input:focus, select:focus { outline: none; border-color: var(--primary); }
         
-        /* Paneles de Resumen */
-        .dashboard-card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px; text-align: center; }
-        .monto-deuda { font-size: 2rem; font-weight: bold; color: var(--accent); margin: 10px 0; }
-        .suscripcion-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        button { width: 100%; padding: 16px; background-color: var(--primary); color: #000; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        button.action-btn { background-color: var(--card-bg); color: var(--text); border: 1px solid var(--primary); }
         
-        /* Formularios */
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 0.9rem; margin-bottom: 5px; color: #555; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
-        button { width: 100%; padding: 15px; background-color: var(--success); color: white; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        button.secundario { background-color: #3498db; }
+        /* Bottom Navigation */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); display: flex; border-top: 1px solid var(--border); }
+        .nav-item { flex: 1; padding: 15px 0; text-align: center; color: #888; font-size: 0.8rem; cursor: pointer; }
+        .nav-item.active { color: var(--primary); font-weight: bold; border-top: 3px solid var(--primary); }
         
-        .alert { display: none; padding: 15px; background: #d4edda; color: #155724; text-align: center; border-radius: 8px; margin-bottom: 15px; font-weight: bold; }
-        
-        /* Loader */
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; display: none; }
+        .loader { border: 4px solid #333; border-top: 4px solid var(--primary); border-radius: 50%; width: 25px; height: 25px; animation: spin 1s linear infinite; margin: auto; display: none; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div class="header">Mis Finanzas</div>
+    <div class="header">Control Financiero</div>
 
-    <div class="tabs">
-        <button class="tab-btn active" onclick="showTab('resumen')">📊 Inicio</button>
-        <button class="tab-btn" onclick="showTab('gastos')">💳 Tarjeta</button>
-        <button class="tab-btn" onclick="showTab('fijos')">🏠 Fijos</button>
-        <button class="tab-btn" onclick="showTab('inversiones')">📈 Inversiones</button>
-        <button class="tab-btn" onclick="showTab('caja')">🏦 Caja</button>
-    </div>
-
-    <div id="mensajeExito" class="alert">¡Operación exitosa!</div>
-
-    <!-- PESTAÑA: RESUMEN (Carga dinámica) -->
-    <div id="resumen" class="tab-content active">
-        <div class="dashboard-card">
-            <h3>Deuda Tarjeta (Período Actual)</h3>
-            <div id="loaderResumen" class="loader" style="display: block;"></div>
-            <div class="monto-deuda" id="lblDeuda">$ 0.00</div>
-            <button class="secundario" onclick="cargarDatosDashboard()" style="padding: 10px; font-size: 0.9rem;">Actualizar Datos</button>
+    <!-- PESTAÑA: BALANCE (Dashboard) -->
+    <div id="inicio" class="tab-content active" style="padding: 0; max-width: 100%;">
+        <div class="dashboard-main">
+            <div style="color: #aaa; font-size: 0.9rem; text-transform: uppercase;">Patrimonio Neto Total</div>
+            <div id="loaderResumen" class="loader" style="display: block; margin-top: 15px;"></div>
+            <div class="net-worth" id="lblNeto">...</div>
         </div>
         
-        <div class="dashboard-card">
-            <h3>Suscripciones Activas</h3>
-            <div id="listaSuscripciones">
-                <p style="color: #888; font-size: 0.9rem;">Cargando...</p>
-            </div>
+        <div class="grid-cards">
+            <div class="card"><div class="card-title">Caja (Liquidez)</div><div class="card-value val-liq" id="lblLiq">$ 0</div></div>
+            <div class="card"><div class="card-title">Inversiones</div><div class="card-value val-inv" id="lblInv">$ 0</div></div>
+            <div class="card" style="grid-column: span 2;"><div class="card-title">Deuda Tarjeta (Mes Actual)</div><div class="card-value val-deuda" id="lblDeuda">$ 0</div></div>
+        </div>
+
+        <div class="projection-box">
+            <h3 style="margin-top: 0; color: #eee; font-size: 1.1rem; text-align: center;">Proyección de Cuotas Futuras</h3>
+            <div id="listaProyeccion"><p style="color: #888; text-align: center;">Calculando...</p></div>
         </div>
     </div>
 
-    <!-- PESTAÑA: GASTOS TARJETA -->
+    <!-- PESTAÑA: INGRESOS Y TARJETA -->
     <div id="gastos" class="tab-content">
-        <!-- Subir Resumen Automático -->
-        <div class="dashboard-card" style="background: #f8f9f9; border: 1px dashed #ccc;">
-            <h4 style="margin-top: 0;">📄 Lector de Resumen Inteligente</h4>
-            <input type="file" id="archivoResumen" accept="application/pdf,image/*" style="margin-bottom: 10px;">
-            <button class="secundario" id="btnSubirArchivo" onclick="procesarArchivo()">Extraer Gastos Mágicamente</button>
+        <div class="projection-box" style="margin: 0 0 20px 0; text-align: center;">
+            <h4 style="margin-top: 0; color: var(--primary);">🤖 Lector IA de Comprobantes</h4>
+            <input type="file" id="archivoResumen" accept="application/pdf,image/*" style="margin-bottom: 15px;">
+            <button class="action-btn" id="btnSubirArchivo" onclick="procesarArchivo()">Extraer Gastos Mágicamente</button>
         </div>
 
-        <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
-        <h4 style="text-align: center;">O Cargar Manualmente</h4>
-
-        <!-- Formulario Manual -->
+        <h4 style="text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 10px;">Carga Manual</h4>
         <form id="formGasto" onsubmit="enviarDatos(event, 'gasto', 'formGasto')">
-            <div class="form-group">
-                <label>Categoría</label>
-                <select id="g_categoria" required>
-                    <option value="General">General / Compras</option>
-                    <option value="Suscripción">Suscripción (Netflix, Spotify, etc)</option>
-                    <option value="Servicio">Servicio Adherido (Luz, Internet)</option>
-                </select>
-            </div>
+            <div class="form-group"><label>Categoría</label><select id="g_categoria"><option value="General">General / Compras</option><option value="Suscripción">Suscripción</option><option value="Servicio">Servicio Adherido</option></select></div>
             <div class="form-group"><label>Fecha</label><input type="date" id="g_fecha" required></div>
             <div class="form-group"><label>Comercio</label><input type="text" id="g_comercio" required></div>
-            <div class="form-group">
-                <label>Tarjeta</label>
-                <select id="g_tarjeta" required><option value="Visa 7431">Visa 7431</option><option value="Mastercard">Mastercard</option></select>
-            </div>
+            <div class="form-group"><label>Tarjeta</label><select id="g_tarjeta"><option value="Visa 7431">Visa 7431</option><option value="Mastercard">Mastercard</option></select></div>
             <div class="form-group"><label>Monto Total ($)</label><input type="number" id="g_montoTotal" step="0.01" required></div>
-            <div class="form-group"><label>Monto en USD (Opcional)</label><input type="number" id="g_montoUSD" step="0.01"></div>
             <div class="form-group"><label>Cuotas</label><input type="number" id="g_cuotas" value="1" min="1" required></div>
-            <button type="submit" id="btnGasto">Guardar Gasto</button>
-        </form>
-    </div>
-
-    <!-- PESTAÑA: GASTOS FIJOS -->
-    <div id="fijos" class="tab-content">
-        <form id="formFijo" onsubmit="enviarDatos(event, 'fijo', 'formFijo')">
-            <div class="form-group"><label>Concepto (Ej. Alquiler, Expensas)</label><input type="text" id="f_concepto" required></div>
-            <div class="form-group"><label>Monto Estimado ($)</label><input type="number" id="f_monto" step="0.01" required></div>
-            <div class="form-group"><label>Día de Vencimiento del mes</label><input type="number" id="f_vencimiento" min="1" max="31" required></div>
-            <button type="submit" id="btnFijo">Registrar Gasto Fijo</button>
+            <button type="submit">Guardar Gasto</button>
         </form>
     </div>
 
     <!-- PESTAÑA: INVERSIONES -->
     <div id="inversiones" class="tab-content">
+        <h3 style="text-align: center;">Actualizar Posición</h3>
         <form id="formInversion" onsubmit="enviarDatos(event, 'inversion', 'formInversion')">
-            <div class="form-group"><label>Plataforma</label><select id="i_plataforma" required><option value="Mercado Pago">Mercado Pago</option><option value="Cocos Capital">Cocos Capital</option><option value="Ripio">Ripio</option><option value="Lemon">Lemon</option></select></div>
+            <div class="form-group"><label>Plataforma</label><select id="i_plataforma"><option value="Mercado Pago">Mercado Pago</option><option value="Cocos Capital">Cocos Capital</option><option value="Ripio">Ripio</option><option value="Lemon">Lemon</option></select></div>
             <div class="form-group"><label>Ticker (Ej: ARS, BTC)</label><input type="text" id="i_ticker" required></div>
             <div class="form-group"><label>Cantidad / Nominales</label><input type="number" id="i_monto" step="0.000001" required></div>
-            <div class="form-group"><label>Cotización</label><input type="number" id="i_cotizacion" step="0.01"></div>
-            <div class="form-group"><label>Total Pesos ($)</label><input type="number" id="i_totalPesos" step="0.01" required></div>
-            <button type="submit" id="btnInversion">Actualizar Inversión</button>
+            <div class="form-group"><label>Total Pesos Estimado ($)</label><input type="number" id="i_totalPesos" step="0.01" required></div>
+            <button type="submit">Actualizar Inversión</button>
         </form>
     </div>
 
     <!-- PESTAÑA: CAJA -->
     <div id="caja" class="tab-content">
+        <h3 style="text-align: center;">Movimientos de Liquidez</h3>
         <form id="formCaja" onsubmit="enviarDatos(event, 'caja', 'formCaja')">
             <div class="form-group"><label>Concepto</label><input type="text" id="c_concepto" required></div>
-            <div class="form-group"><label>Tipo</label><select id="c_tipo" required><option value="Ingreso">Ingreso</option><option value="Egreso">Egreso</option></select></div>
+            <div class="form-group"><label>Tipo</label><select id="c_tipo"><option value="Ingreso">Ingreso</option><option value="Egreso">Egreso</option></select></div>
             <div class="form-group"><label>Monto Movimiento ($)</label><input type="number" id="c_monto" step="0.01" required></div>
             <div class="form-group"><label>Saldo Resultante ($)</label><input type="number" id="c_saldo" step="0.01" required></div>
-            <button type="submit" id="btnCaja">Registrar Caja</button>
+            <button type="submit">Registrar Caja</button>
         </form>
     </div>
 
+    <!-- Menú de Navegación Inferior -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="showTab('inicio', this)">📊<br>Balance</div>
+        <div class="nav-item" onclick="showTab('gastos', this)">💳<br>Gastos</div>
+        <div class="nav-item" onclick="showTab('inversiones', this)">📈<br>Inversiones</div>
+        <div class="nav-item" onclick="showTab('caja', this)">🏦<br>Caja</div>
+    </div>
+
     <script>
-        // Tu URL oficial de Google Apps Script
         const scriptURL = 'https://script.google.com/macros/s/AKfycbwXCw0lCjKEz25LmY-DdpgfnBDr2SDstt_mSROArr47XWqLHsqb3P_5gw1qXGCr-5jIJg/exec';
 
-        // Cambiar pestañas
-        function showTab(tabId) {
+        function showTab(tabId, el) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+            el.classList.add('active');
+            if(tabId === 'inicio') cargarDashboard();
         }
 
-        // Cargar datos al abrir la app (GET)
         window.onload = function() {
             document.getElementById('g_fecha').valueAsDate = new Date();
-            cargarDatosDashboard();
+            cargarDashboard();
         };
 
-        function cargarDatosDashboard() {
+        const formatearPesos = (num) => '$ ' + num.toLocaleString('es-AR', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+
+        function cargarDashboard() {
             document.getElementById('loaderResumen').style.display = 'block';
-            document.getElementById('lblDeuda').innerText = '...';
+            document.getElementById('lblNeto').innerText = '';
             
             fetch(scriptURL)
                 .then(res => res.json())
                 .then(data => {
                     document.getElementById('loaderResumen').style.display = 'none';
-                    // Formatear deuda
-                    document.getElementById('lblDeuda').innerText = '$ ' + data.deudaTarjeta.toLocaleString('es-AR', {minimumFractionDigits: 2});
+                    document.getElementById('lblNeto').innerText = formatearPesos(data.patrimonioNeto);
+                    document.getElementById('lblLiq').innerText = formatearPesos(data.liquidez);
+                    document.getElementById('lblInv').innerText = formatearPesos(data.inversiones);
+                    document.getElementById('lblDeuda').innerText = formatearPesos(data.deudaTarjeta);
                     
-                    // Cargar lista de suscripciones
-                    let htmlSuscripciones = '';
-                    if(data.suscripcionesActivas.length === 0) {
-                        htmlSuscripciones = '<p>No hay suscripciones pendientes.</p>';
+                    let htmlProj = '';
+                    if(data.proyeccion.length === 0) {
+                        htmlProj = '<p style="text-align:center; color:#888;">No hay cuotas pendientes</p>';
                     } else {
-                        data.suscripcionesActivas.forEach(s => {
-                            htmlSuscripciones += `<div class="suscripcion-item"><span>${s.comercio}</span><strong>$ ${s.monto.toLocaleString('es-AR')}</strong></div>`;
+                        data.proyeccion.forEach(p => {
+                            htmlProj += `<div class="proj-item"><span style="color:#bbb">${p.mes}</span><strong style="color:var(--danger)">${formatearPesos(p.monto)}</strong></div>`;
                         });
                     }
-                    document.getElementById('listaSuscripciones').innerHTML = htmlSuscripciones;
-                })
-                .catch(err => {
-                    console.error(err);
+                    document.getElementById('listaProyeccion').innerHTML = htmlProj;
+                }).catch(err => {
                     document.getElementById('loaderResumen').style.display = 'none';
-                    document.getElementById('lblDeuda').innerText = 'Error al cargar';
+                    document.getElementById('lblNeto').innerText = 'Error';
                 });
         }
 
-        // Enviar datos manuales (POST)
         function enviarDatos(e, tipo, formId) {
             e.preventDefault();
             const btn = document.querySelector(`#${formId} button`);
-            const btnText = btn.innerText;
-            btn.innerText = "Guardando..."; btn.disabled = true;
+            const btnText = btn.innerText; btn.innerText = "Guardando..."; btn.disabled = true;
 
             let datos = { tipoRegistro: tipo };
             if (tipo === 'gasto') {
-                datos.categoria = document.getElementById('g_categoria').value;
-                datos.fecha = document.getElementById('g_fecha').value;
-                datos.comercio = document.getElementById('g_comercio').value;
-                datos.tarjeta = document.getElementById('g_tarjeta').value;
-                datos.montoTotal = parseFloat(document.getElementById('g_montoTotal').value);
-                datos.montoUSD = parseFloat(document.getElementById('g_montoUSD').value) || 0;
-                datos.cuotasTotales = parseInt(document.getElementById('g_cuotas').value);
-            } else if (tipo === 'fijo') {
-                datos.concepto = document.getElementById('f_concepto').value;
-                datos.monto = parseFloat(document.getElementById('f_monto').value);
-                datos.vencimiento = parseInt(document.getElementById('f_vencimiento').value);
+                datos.categoria = document.getElementById('g_categoria').value; datos.fecha = document.getElementById('g_fecha').value;
+                datos.comercio = document.getElementById('g_comercio').value; datos.tarjeta = document.getElementById('g_tarjeta').value;
+                datos.montoTotal = parseFloat(document.getElementById('g_montoTotal').value); datos.cuotasTotales = parseInt(document.getElementById('g_cuotas').value);
             } else if (tipo === 'inversion') {
-                datos.plataforma = document.getElementById('i_plataforma').value;
-                datos.monedaTicker = document.getElementById('i_ticker').value;
-                datos.monto = parseFloat(document.getElementById('i_monto').value);
-                datos.cotizacion = parseFloat(document.getElementById('i_cotizacion').value) || 0;
-                datos.totalPesos = parseFloat(document.getElementById('i_totalPesos').value);
+                datos.plataforma = document.getElementById('i_plataforma').value; datos.monedaTicker = document.getElementById('i_ticker').value;
+                datos.monto = parseFloat(document.getElementById('i_monto').value); datos.totalPesos = parseFloat(document.getElementById('i_totalPesos').value);
             } else if (tipo === 'caja') {
-                datos.concepto = document.getElementById('c_concepto').value;
-                datos.tipoMovimiento = document.getElementById('c_tipo').value;
-                datos.monto = parseFloat(document.getElementById('c_monto').value);
-                datos.saldoResultante = parseFloat(document.getElementById('c_saldo').value);
+                datos.concepto = document.getElementById('c_concepto').value; datos.tipoMovimiento = document.getElementById('c_tipo').value;
+                datos.monto = parseFloat(document.getElementById('c_monto').value); datos.saldoResultante = parseFloat(document.getElementById('c_saldo').value);
             }
 
             fetch(scriptURL, { method: 'POST', body: JSON.stringify(datos), headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('mensajeExito').style.display = 'block';
-                document.getElementById(formId).reset();
-                if(tipo === 'gasto') cargarDatosDashboard(); // Refrescar tablero
-                setTimeout(() => { document.getElementById('mensajeExito').style.display = 'none'; }, 4000);
+            .then(res => res.json()).then(data => {
+                alert("¡Guardado exitoso!"); document.getElementById(formId).reset();
             }).finally(() => { btn.innerText = btnText; btn.disabled = false; });
         }
 
-        // Lógica para enviar el archivo PDF/Imagen a Gemini (IA)
         function procesarArchivo() {
             const fileInput = document.getElementById('archivoResumen');
             if (fileInput.files.length === 0) { alert("Por favor seleccioná un archivo primero."); return; }
-            
-            const file = fileInput.files[0];
-            const btn = document.getElementById('btnSubirArchivo');
-            btn.innerText = "Analizando con IA (puede demorar)..."; btn.disabled = true;
+            const btn = document.getElementById('btnSubirArchivo'); btn.innerText = "Analizando...⏳"; btn.disabled = true;
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                // Obtenemos solo la cadena Base64
-                const base64Data = e.target.result.split(',')[1]; 
-                const mimeType = file.type;
-
-                const payload = {
-                    tipoRegistro: "upload_resumen",
-                    archivoBase64: base64Data,
-                    mimeType: mimeType
-                };
-
+                const payload = { tipoRegistro: "upload_resumen", archivoBase64: e.target.result.split(',')[1], mimeType: fileInput.files[0].type };
                 fetch(scriptURL, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
-                .then(res => res.json())
-                .then(data => {
-                    if(data.status === "error") {
-                        alert("Hubo un problema: " + data.mensaje);
-                    } else {
-                        alert(data.mensaje || "¡Resumen procesado y cargado en la planilla!");
-                        cargarDatosDashboard(); // Refrescar los números
-                    }
-                })
-                .catch(err => alert("Error al comunicarse con el servidor."))
+                .then(res => res.json()).then(data => { alert(data.mensaje || "¡Procesado!"); })
                 .finally(() => { btn.innerText = "Extraer Gastos Mágicamente"; btn.disabled = false; fileInput.value = ""; });
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(fileInput.files[0]);
         }
     </script>
 </body>
